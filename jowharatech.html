@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jowharatech — Production & Régie Artistique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-dark: #9B7D2E;
+  --dark: #0A0A0A;
+  --dark-100: #111111;
+  --dark-200: #1A1A1A;
+  --dark-300: #222222;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:#0A0A0A;color:white;font-family:'Montserrat',sans-serif;overflow-x:hidden;cursor:none;}
+.display{font-family:'Cormorant Garamond',serif;}
+.arabic{font-family:'Noto Naskh Arabic',serif;direction:rtl;}
+.gold-gradient{background:linear-gradient(135deg,#E8C96A,#C9A84C,#9B7D2E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.divider{width:50px;height:1.5px;background:linear-gradient(90deg,var(--gold),transparent);}
+
+/* CURSOR */
+.cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+.cursor-ring{width:32px;height:32px;border:1px solid rgba(201,168,76,.4);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:#0A0A0A;}
+::-webkit-scrollbar-thumb{background:var(--gold-dark);}
+
+/* BUTTONS */
+.btn-gold{background:linear-gradient(135deg,#C9A84C,#9B7D2E);color:#0A0A0A;padding:12px 32px;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;transition:transform .3s,box-shadow .3s;font-family:'Montserrat',sans-serif;}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 40px rgba(201,168,76,.3);}
+.btn-outline{border:1px solid var(--gold);color:var(--gold);padding:12px 32px;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;background:transparent;cursor:pointer;transition:all .3s;font-family:'Montserrat',sans-serif;}
+.btn-outline:hover{background:var(--gold);color:#0A0A0A;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .9s ease,transform .9s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 48px;display:flex;align-items:center;justify-content:space-between;transition:all .4s;}
+nav.scrolled{background:rgba(10,10,10,.88);border-bottom:1px solid rgba(201,168,76,.1);backdrop-filter:blur(20px);padding:10px 48px;}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.logo-diamond{width:34px;height:34px;border:1px solid rgba(201,168,76,.5);display:flex;align-items:center;justify-content:center;transform:rotate(45deg);transition:border-color .3s;}
+.logo-diamond:hover{border-color:var(--gold);}
+.logo-inner{width:14px;height:14px;background:rgba(201,168,76,.25);transform:rotate(-45deg);}
+.logo-text{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:.15em;text-transform:uppercase;color:white;}
+.logo-text span{color:var(--gold);}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-link a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;}
+.nav-link .fr{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.6);transition:color .3s;}
+.nav-link .ar{font-family:'Noto Naskh Arabic',serif;font-size:9px;color:rgba(201,168,76,.35);transition:color .3s;}
+.nav-link a:hover .fr{color:var(--gold);}
+.nav-link a:hover .ar{color:rgba(201,168,76,.7);}
+.nav-cta{display:block;}
+
+/* MOBILE NAV */
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.burger span{width:24px;height:1.5px;background:var(--gold);transition:all .3s;}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:rgba(10,10,10,.96);border-bottom:1px solid rgba(201,168,76,.1);backdrop-filter:blur(20px);padding:24px 32px;z-index:199;}
+.mobile-menu.open{display:block;}
+.mobile-menu ul{list-style:none;display:flex;flex-direction:column;gap:0;}
+.mobile-menu li a{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(201,168,76,.08);text-decoration:none;}
+.mobile-menu li a .fr{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.7);}
+.mobile-menu li a .ar{font-family:'Noto Naskh Arabic',serif;font-size:12px;color:rgba(201,168,76,.5);}
+
+/* ── HERO ── */
+#hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;}
+#hero-canvas{position:absolute;inset:0;z-index:1;}
+.hero-grad1{position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,rgba(10,10,10,.93) 45%,rgba(10,10,10,.2) 100%);}
+.hero-grad2{position:absolute;inset:0;z-index:2;background:linear-gradient(0deg,rgba(10,10,10,.85) 0%,transparent 55%);}
+.hero-content{position:relative;z-index:10;padding:0 48px;padding-top:100px;max-width:680px;}
+.hero-ar{font-family:'Noto Naskh Arabic',serif;color:rgba(201,168,76,.65);font-size:15px;display:block;margin-bottom:14px;letter-spacing:.05em;}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,8vw,92px);font-weight:300;line-height:.92;margin-bottom:20px;}
+.hero-h1 .line-gold{background:linear-gradient(135deg,#E8C96A,#C9A84C,#9B7D2E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:440px;line-height:1.8;margin:18px 0 32px;}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
+.hero-stats{position:absolute;bottom:40px;left:48px;z-index:10;display:flex;gap:40px;}
+.h-stat .num{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,46px);font-weight:700;background:linear-gradient(135deg,#E8C96A,#C9A84C,#9B7D2E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.h-stat .lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:3px;}
+.h-stat .ar{font-family:'Noto Naskh Arabic',serif;font-size:9px;color:rgba(201,168,76,.35);}
+.scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:10;display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(201,168,76,.35);}
+.scroll-hint span{font-size:8px;letter-spacing:.3em;text-transform:uppercase;}
+.scroll-arrow{width:1px;height:30px;background:linear-gradient(180deg,var(--gold),transparent);animation:scrollDown 2s ease-in-out infinite;}
+@keyframes scrollDown{0%,100%{transform:scaleY(1);opacity:.4;}50%{transform:scaleY(1.3);opacity:.8;}}
+
+/* ── ABOUT ── */
+#about{padding:100px 48px;position:relative;overflow:hidden;}
+#about::before{content:'';position:absolute;right:0;top:0;width:55%;height:100%;background:linear-gradient(270deg,rgba(201,168,76,.03),transparent);pointer-events:none;}
+#about::after{content:'';position:absolute;bottom:-80px;left:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(201,168,76,.04),transparent 70%);pointer-events:none;}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;max-width:1200px;margin:0 auto;}
+.section-badge{display:flex;align-items:center;gap:14px;margin-bottom:22px;}
+.badge-label{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);}
+.badge-ar{font-family:'Noto Naskh Arabic',serif;font-size:9px;color:rgba(201,168,76,.4);}
+.about-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,3.5vw,46px);font-weight:300;line-height:1.15;margin-bottom:24px;}
+.about-h2 .accent{background:linear-gradient(135deg,#E8C96A,#C9A84C,#9B7D2E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600;}
+.hr-gold{height:1px;background:linear-gradient(90deg,rgba(201,168,76,.3),transparent);margin:22px 0;}
+.body-p{font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.85;margin-bottom:14px;}
+.blockquote-box{border-left:2px solid var(--gold);padding-left:18px;margin:24px 0;}
+.blockquote-box p{font-family:'Noto Naskh Arabic',serif;color:rgba(201,168,76,.65);font-size:14px;line-height:1.9;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stat-card{background:#1A1A1A;border:1px solid rgba(201,168,76,.1);padding:22px;position:relative;overflow:hidden;transition:border-color .4s;}
+.stat-card:hover{border-color:rgba(201,168,76,.3);}
+.stat-card.wide{grid-column:span 2;}
+.stat-card .big-n{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5vw,60px);font-weight:700;background:linear-gradient(135deg,#E8C96A,#C9A84C,#9B7D2E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.stat-card .clabel{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:5px;}
+.stat-card .car{font-family:'Noto Naskh Arabic',serif;font-size:9px;color:rgba(201,168,76,.3);margin-top:2px;}
+.quote-card{grid-column:span 2;background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.04));border:1px solid rgba(201,168,76,.2);padding:22px;}
+.quote-card p{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:rgba(255,255,255,.75);line-height:1.6;}
+.quote-card .qa{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-top:12px;}
+
+/* ── EXPERTISES ── */
+#expertises{background:#111;padding:100px 48px;position:relative;overflow:hidden;}
+#expertises::before{content:'';position:absolute;left:50%;top:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(201,168,76,.07),transparent);pointer-events:none;}
+.section-center{text-align:center;margin-bottom:56px;}
+.center-badge{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px;}
+.center-badge .line{width:40px;height:1px;}
+.line-r{background:linear-gradient(90deg,transparent,var(--gold));}
+.line-l{background:linear-gradient(270deg,transparent,var(--gold));}
+.center-badge span{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);}
+.exp-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,5vw,64px);font-weight:300;line-height:1;}
+.exp-ar{font-family:'Noto Naskh Arabic',serif;color:rgba(201,168,76,.4);font-size:13px;margin-top:10px;}
+.exp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(201,168,76,.06);max-width:1200px;margin:0 auto;}
+.exp-card{background:#111;padding:32px 26px;position:relative;overflow:hidden;transition:background .4s;}
+.exp-card:hover{background:#1a1a1a;}
+.exp-top-line{position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent);opacity:0;transition:opacity .4s;}
+.exp-card:hover .exp-top-line{opacity:1;}
+.exp-bg-num{position:absolute;top:10px;right:14px;font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;color:rgba(201,168,76,.05);line-height:1;user-select:none;}
+.exp-icon-sym{font-size:24px;color:var(--gold);margin-bottom:18px;font-family:'Cormorant Garamond',serif;}
+.exp-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:white;transition:color .3s;}
+.exp-card:hover .exp-title{color:var(--gold);}
+.exp-title-ar{font-family:'Noto Naskh Arabic',serif;font-size:10px;color:rgba(201,168,76,.45);margin:3px 0 12px;}
+.exp-div{width:40px;height:1.5px;background:linear-gradient(90deg,var(--gold),transparent);margin-bottom:12px;transition:width .4s;}
+.exp-card:hover .exp-div{width:60px;}
+.exp-desc{font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.75;}
+
+/* ── REFERENCES ── */
+#references{padding:100px 48px;background:#0A0A0A;}
+.ref-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:48px;flex-wrap:wrap;gap:20px;max-width:1200px;margin-left:auto;margin-right:auto;}
+.ref-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,62px);font-weight:300;line-height:1.05;}
+.ref-h2 .accent{background:linear-gradient(135deg,#E8C96A,#C9A84C,#9B7D2E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600;}
+.ref-sub-note{font-size:11px;color:rgba(255,255,255,.3);max-width:220px;text-align:right;line-height:1.7;}
+.fest-list{max-width:1200px;margin:0 auto;}
+.fest-row{display:flex;align-items:center;gap:14px;padding:18px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:border-color .3s;}
+.fest-row:hover{border-color:rgba(201,168,76,.2);}
+.fest-n{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:700;color:rgba(255,255,255,.05);width:52px;text-align:right;flex-shrink:0;transition:color .3s;}
+.fest-row:hover .fest-n{color:rgba(201,168,76,.12);}
+.fest-vl{width:1px;height:42px;background:rgba(201,168,76,.1);flex-shrink:0;transition:background .3s;}
+.fest-row:hover .fest-vl{background:rgba(201,168,76,.45);}
+.fest-info{flex:1;min-width:0;}
+.fest-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:white;transition:color .3s;}
+.fest-row:hover .fest-name{color:var(--gold);}
+.fest-desc{font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;}
+.fest-region{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2);flex-shrink:0;}
+.fest-tag{font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;background:rgba(201,168,76,.12);color:var(--gold);flex-shrink:0;}
+.fest-arr{width:24px;height:24px;border:1px solid rgba(201,168,76,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:rgba(201,168,76,.35);transition:all .3s;}
+.fest-row:hover .fest-arr{border-color:var(--gold);color:var(--gold);}
+.phil-box{background:#1a1a1a;border:1px solid rgba(201,168,76,.2);padding:36px;position:relative;overflow:hidden;margin-top:36px;max-width:1200px;margin-left:auto;margin-right:auto;}
+.phil-box::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;background:linear-gradient(180deg,var(--gold),rgba(201,168,76,.1));}
+.phil-box .bg-quote{position:absolute;right:-10px;bottom:-30px;font-family:'Cormorant Garamond',serif;font-size:200px;font-weight:700;color:rgba(201,168,76,.03);line-height:1;user-select:none;}
+.phil-inner{display:flex;gap:40px;align-items:start;}
+.phil-fr{flex:1;}
+.phil-quote-text{font-family:'Cormorant Garamond',serif;font-size:22px;color:rgba(255,255,255,.8);font-style:italic;line-height:1.5;}
+.phil-author{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-top:16px;}
+.phil-ar-text{font-family:'Noto Naskh Arabic',serif;color:rgba(201,168,76,.55);font-size:14px;text-align:right;line-height:1.9;max-width:260px;flex-shrink:0;}
+
+/* ── CONTACT ── */
+#contact{background:#111;padding:100px 48px;position:relative;overflow:hidden;}
+#contact::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(201,168,76,.04),transparent 70%);pointer-events:none;}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;max-width:1200px;margin:0 auto;}
+.contact-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4.5vw,58px);font-weight:300;line-height:1.05;margin-bottom:10px;}
+.contact-h2 .accent{background:linear-gradient(135deg,#E8C96A,#C9A84C,#9B7D2E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600;display:block;}
+.contact-ar-sub{font-family:'Noto Naskh Arabic',serif;color:rgba(201,168,76,.55);font-size:15px;margin-bottom:14px;}
+.contact-info-list{display:flex;flex-direction:column;gap:22px;margin-top:30px;}
+.info-row{display:flex;align-items:flex-start;gap:16px;}
+.info-ico{width:42px;height:42px;border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;color:var(--gold);transition:all .3s;}
+.info-ico:hover{border-color:var(--gold);background:rgba(201,168,76,.08);}
+.info-lbl{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:3px;}
+.info-val{font-size:12px;color:white;}
+.info-val2{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px;}
+.form-wrap{background:#1a1a1a;border:1px solid rgba(201,168,76,.1);padding:30px;position:relative;}
+.form-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.5),rgba(201,168,76,.1),transparent);}
+.form-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:white;margin-bottom:4px;}
+.form-title-ar{font-family:'Noto Naskh Arabic',serif;font-size:10px;color:rgba(201,168,76,.4);margin-bottom:22px;}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;background:#222;border:1px solid rgba(201,168,76,.1);padding:9px 13px;font-size:11.5px;color:white;font-family:'Montserrat',sans-serif;outline:none;resize:none;transition:border-color .3s;-webkit-appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(201,168,76,.4);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,.2);}
+.field select option{background:#222;color:white;}
+.form-submit{width:100%;margin-top:6px;}
+
+/* ── FOOTER ── */
+footer{background:#0A0A0A;border-top:1px solid rgba(201,168,76,.1);padding:28px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
+.footer-copy{font-size:10px;color:rgba(255,255,255,.2);line-height:1.6;}
+.footer-ar{font-family:'Noto Naskh Arabic',serif;font-size:12px;color:rgba(201,168,76,.3);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .about-grid,.contact-grid{grid-template-columns:1fr;}
+  .exp-grid{grid-template-columns:repeat(2,1fr);}
+  .nav-links,.nav-cta{display:none;}
+  .burger{display:flex;}
+  .hero-content{padding:0 24px;padding-top:100px;}
+  .hero-stats{left:24px;gap:24px;}
+  #about,#expertises,#references,#contact{padding:70px 24px;}
+  nav{padding:14px 24px;}
+  nav.scrolled{padding:10px 24px;}
+  .ref-header{flex-direction:column;}
+  .ref-sub-note{text-align:left;}
+  .phil-inner{flex-direction:column;}
+  .phil-ar-text{max-width:100%;}
+}
+@media(max-width:560px){
+  .exp-grid{grid-template-columns:1fr;}
+  .hero-h1{font-size:42px;}
+  footer{flex-direction:column;text-align:center;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .form-row2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curRing"></div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#hero" class="logo">
+    <div class="logo-diamond"><div class="logo-inner"></div></div>
+    <div class="logo-text">Jowhara<span>tech</span></div>
+  </a>
+  <ul class="nav-links">
+    <li class="nav-link"><a href="#hero"><span class="fr">Accueil</span><span class="ar">الرئيسية</span></a></li>
+    <li class="nav-link"><a href="#about"><span class="fr">À Propos</span><span class="ar">من نحن</span></a></li>
+    <li class="nav-link"><a href="#expertises"><span class="fr">Expertises</span><span class="ar">خدماتنا</span></a></li>
+    <li class="nav-link"><a href="#references"><span class="fr">Références</span><span class="ar">مراجعنا</span></a></li>
+    <li class="nav-link"><a href="#contact"><span class="fr">Contact</span><span class="ar">اتصل بنا</span></a></li>
+  </ul>
+  <a href="#contact" class="btn-gold nav-cta" style="text-decoration:none;font-family:'Montserrat',sans-serif;">Nous Contacter</a>
+  <div class="burger" id="burger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="#hero" onclick="closeMenu()"><span class="fr">Accueil</span><span class="ar">الرئيسية</span></a></li>
+    <li><a href="#about" onclick="closeMenu()"><span class="fr">À Propos</span><span class="ar">من نحن</span></a></li>
+    <li><a href="#expertises" onclick="closeMenu()"><span class="fr">Expertises</span><span class="ar">خدماتنا</span></a></li>
+    <li><a href="#references" onclick="closeMenu()"><span class="fr">Références</span><span class="ar">مراجعنا</span></a></li>
+    <li><a href="#contact" onclick="closeMenu()"><span class="fr">Contact</span><span class="ar">اتصل بنا</span></a></li>
+  </ul>
+  <a href="#contact" class="btn-gold" style="display:block;text-align:center;margin-top:20px;text-decoration:none;" onclick="closeMenu()">Nous Contacter</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-grad1"></div>
+  <div class="hero-grad2"></div>
+  <div class="hero-content">
+    <span class="hero-ar">خبراء الإنتاج والإدارة الفنية</span>
+    <h1 class="hero-h1">
+      <span style="display:block">Des scènes</span>
+      <span class="line-gold" style="display:block">qui marquent</span>
+      <span style="display:block">les esprits.</span>
+    </h1>
+    <div class="divider" style="margin:16px 0"></div>
+    <p class="hero-sub">Des festivals qui transcendent les frontières. Leader en production événementielle dans le sud du Maroc et au-delà.</p>
+    <div class="hero-btns">
+      <a href="#references" class="btn-gold" style="text-decoration:none">Nos Réalisations</a>
+      <a href="#expertises" class="btn-outline" style="text-decoration:none">Nos Expertises</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="h-stat">
+      <div class="num">20+</div>
+      <div class="lbl">Années d'expérience</div>
+      <div class="ar">سنة خبرة</div>
+    </div>
+    <div class="h-stat">
+      <div class="num">8+</div>
+      <div class="lbl">Festivals majeurs</div>
+      <div class="ar">مهرجانات كبرى</div>
+    </div>
+    <div class="h-stat">
+      <div class="num">100%</div>
+      <div class="lbl">Satisfaction</div>
+      <div class="ar">رضا العملاء</div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="section-badge">
+        <div class="divider"></div>
+        <span class="badge-label">À Propos</span>
+        <span class="badge-ar">من نحن</span>
+      </div>
+      <h2 class="about-h2">
+        Notre force réside dans notre capacité à allier
+        <span class="accent">tradition et modernité</span>
+        sur chaque scène.
+      </h2>
+      <div class="hr-gold"></div>
+      <p class="body-p">Depuis plusieurs années, notre entreprise est au cœur de l'organisation et de la production des plus grands festivals et événements culturels du Maroc et de la région.</p>
+      <p class="body-p">Spécialisée dans la gestion technique, la scénographie et la régie artistique, notre équipe passionnée met son expertise au service de chaque événement pour créer des expériences inoubliables.</p>
+      <div class="blockquote-box">
+        <p>قوتنا تكمن في قدرتنا على الجمع بين التراث والحداثة على كل خشبة مسرح</p>
+      </div>
+      <a href="#expertises" class="btn-outline" style="display:inline-block;text-decoration:none;margin-top:8px">Découvrir nos expertises</a>
+    </div>
+    <div class="reveal" style="transition-delay:.2s">
+      <div class="stats-grid">
+        <div class="stat-card wide">
+          <div class="big-n">20+</div>
+          <div class="clabel">Années d'expérience</div>
+          <div class="car">سنة من الخبرة</div>
+        </div>
+        <div class="stat-card">
+          <div class="big-n" style="font-size:clamp(32px,4vw,50px)">8+</div>
+          <div class="clabel">Festivals</div>
+          <div class="car">مهرجانات</div>
+        </div>
+        <div class="stat-card">
+          <div class="big-n" style="font-size:clamp(32px,4vw,50px)">100%</div>
+          <div class="clabel">Satisfaction</div>
+          <div class="car">رضا تام</div>
+        </div>
+        <div class="quote-card">
+          <p>"L'événement parfait naît d'une vision audacieuse et d'une exécution irréprochable."</p>
+          <div class="qa">— Jowharatech, notre philosophie</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERTISES -->
+<section id="expertises">
+  <div class="section-center">
+    <div class="center-badge">
+      <div class="line line-r"></div>
+      <span>Nos Expertises</span>
+      <div class="line line-l"></div>
+    </div>
+    <h2 class="exp-h2 display">Un savoir-faire <span class="gold-gradient" style="font-weight:600">reconnu</span></h2>
+    <p class="exp-ar">خبرة معترف بها في كل جانب من جوانب الإنتاج</p>
+  </div>
+  <div class="exp-grid reveal">
+    <div class="exp-card">
+      <div class="exp-top-line"></div>
+      <div class="exp-bg-num">01</div>
+      <div class="exp-icon-sym">⬡</div>
+      <div class="exp-title">Production Technique</div>
+      <div class="exp-title-ar">الإنتاج التقني</div>
+      <div class="exp-div"></div>
+      <p class="exp-desc">Installation complète de scènes professionnelles, structures modulaires adaptées à tous les formats d'événements, son et lumière de dernière génération.</p>
+    </div>
+    <div class="exp-card">
+      <div class="exp-top-line"></div>
+      <div class="exp-bg-num">02</div>
+      <div class="exp-icon-sym">◈</div>
+      <div class="exp-title">Scénographie & Décor</div>
+      <div class="exp-title-ar">التصميم والديكور</div>
+      <div class="exp-div"></div>
+      <p class="exp-desc">Conception artistique de l'espace, décors sur mesure, identité visuelle de l'événement, LED walls et structures d'affichage grand format.</p>
+    </div>
+    <div class="exp-card">
+      <div class="exp-top-line"></div>
+      <div class="exp-bg-num">03</div>
+      <div class="exp-icon-sym">◎</div>
+      <div class="exp-title">Sonorisation & Éclairage</div>
+      <div class="exp-title-ar">الصوت والإضاءة</div>
+      <div class="exp-div"></div>
+      <p class="exp-desc">Systèmes audio haute performance, éclairage scénique spectaculaire, équipe technique expérimentée pour une expérience visuelle exceptionnelle.</p>
+    </div>
+    <div class="exp-card">
+      <div class="exp-top-line"></div>
+      <div class="exp-bg-num">04</div>
+      <div class="exp-icon-sym">◇</div>
+      <div class="exp-title">Régie Artistique</div>
+      <div class="exp-title-ar">الإدارة الفنية</div>
+      <div class="exp-div"></div>
+      <p class="exp-desc">Coordination des artistes et équipes, planning technique, gestion de la logistique, accompagnement des équipes internationales et nationales.</p>
+    </div>
+    <div class="exp-card">
+      <div class="exp-top-line"></div>
+      <div class="exp-bg-num">05</div>
+      <div class="exp-icon-sym">◉</div>
+      <div class="exp-title">Événements en Plein Air</div>
+      <div class="exp-title-ar">الفعاليات في الهواء الطلق</div>
+      <div class="exp-div"></div>
+      <p class="exp-desc">Spécialiste des événements dans des environnements naturels et désertiques, structures adaptées aux conditions climatiques du Sahara.</p>
+    </div>
+    <div class="exp-card">
+      <div class="exp-top-line"></div>
+      <div class="exp-bg-num">06</div>
+      <div class="exp-icon-sym">✦</div>
+      <div class="exp-title">Dimension Internationale</div>
+      <div class="exp-title-ar">البعد الدولي</div>
+      <div class="exp-div"></div>
+      <p class="exp-desc">Expérience avec artistes et équipes du monde entier, maîtrise des standards techniques internationaux, rayonnement au-delà des frontières du Maroc.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REFERENCES -->
+<section id="references">
+  <div class="section-badge" style="max-width:1200px;margin:0 auto 10px;">
+    <div class="divider"></div>
+    <span class="badge-label">Nos Références</span>
+    <span class="badge-ar">مراجعنا</span>
+  </div>
+  <div class="ref-header">
+    <h2 class="ref-h2 reveal">
+      Festivals &<br>
+      <span class="accent">Événements</span><br>
+      Marquants
+    </h2>
+    <p class="ref-sub-note reveal" style="transition-delay:.2s">Des événements qui ont marqué l'histoire culturelle du Maroc et du Sahara.</p>
+  </div>
+  <div class="fest-list reveal">
+    <div class="fest-row"><span class="fest-n">01</span><div class="fest-vl"></div><div class="fest-info"><div class="fest-name">Moussem Tan Tan</div><div class="fest-desc">Festival International de la Culture Sahraouie</div></div><span class="fest-region">Tan Tan</span><span class="fest-tag">Culture</span><div class="fest-arr">→</div></div>
+    <div class="fest-row"><span class="fest-n">02</span><div class="fest-vl"></div><div class="fest-info"><div class="fest-name">Festival Guelmim</div><div class="fest-desc">Célébration des traditions du Souss</div></div><span class="fest-region">Guelmim</span><span class="fest-tag">Tradition</span><div class="fest-arr">→</div></div>
+    <div class="fest-row"><span class="fest-n">03</span><div class="fest-vl"></div><div class="fest-info"><div class="fest-name">Talguitart Agadir</div><div class="fest-desc">Festival de musique — Agadir</div></div><span class="fest-region">Agadir</span><span class="fest-tag">Musique</span><div class="fest-arr">→</div></div>
+    <div class="fest-row"><span class="fest-n">04</span><div class="fest-vl"></div><div class="fest-info"><div class="fest-name">Festival des Amandiers</div><div class="fest-desc">Lumières de Tafraout</div></div><span class="fest-region">Tafraout</span><span class="fest-tag">Arts</span><div class="fest-arr">→</div></div>
+    <div class="fest-row"><span class="fest-n">05</span><div class="fest-vl"></div><div class="fest-info"><div class="fest-name">Festival Timizar</div><div class="fest-desc">Arts et culture de la région</div></div><span class="fest-region">Souss</span><span class="fest-tag">Culture</span><div class="fest-arr">→</div></div>
+    <div class="fest-row"><span class="fest-n">06</span><div class="fest-vl"></div><div class="fest-info"><div class="fest-name">Festival Tifawine</div><div class="fest-desc">Lumières de Tafraout</div></div><span class="fest-region">Tafraout</span><span class="fest-tag">Arts</span><div class="fest-arr">→</div></div>
+    <div class="fest-row"><span class="fest-n">07</span><div class="fest-vl"></div><div class="fest-info"><div class="fest-name">Festival Idennayer</div><div class="fest-desc">Célébration amazighe</div></div><span class="fest-region">Maroc</span><span class="fest-tag">Amazigh</span><div class="fest-arr">→</div></div>
+    <div class="fest-row"><span class="fest-n">08</span><div class="fest-vl"></div><div class="fest-info"><div class="fest-name">Festival Souissi Rabat</div><div class="fest-desc">Grande scène nationale, Rabat</div></div><span class="fest-region">Rabat</span><span class="fest-tag">National</span><div class="fest-arr">→</div></div>
+  </div>
+  <div class="phil-box reveal">
+    <div class="bg-quote">"</div>
+    <div class="phil-inner">
+      <div class="phil-fr">
+        <div class="phil-quote-text">"L'événement parfait naît d'une vision audacieuse et d'une exécution irréprochable."</div>
+        <div class="phil-author">— Jowharatech, notre philosophie</div>
+      </div>
+      <div class="phil-ar-text">"الحدث المثالي يولد من رؤية جريئة وتنفيذ لا تشوبه شائبة"</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-grid">
+    <div class="reveal">
+      <div class="section-badge">
+        <div class="divider"></div>
+        <span class="badge-label">Contact</span>
+        <span class="badge-ar">اتصل بنا</span>
+      </div>
+      <h2 class="contact-h2">
+        Travaillons
+        <span class="accent">ensemble.</span>
+      </h2>
+      <p class="contact-ar-sub">لنعمل معاً على تحقيق رؤيتك</p>
+      <p class="body-p" style="max-width:360px">Prêt à créer un événement inoubliable ? Contactez notre équipe pour discuter de votre projet et bénéficier de notre expertise.</p>
+      <div class="contact-info-list">
+        <div class="info-row">
+          <div class="info-ico">✉</div>
+          <div>
+            <div class="info-lbl">Email</div>
+            <div class="info-val">jowharatech@gmail.com</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-ico">☏</div>
+          <div>
+            <div class="info-lbl">Téléphone</div>
+            <div class="info-val">+212 6 61 43 77 60</div>
+            <div class="info-val2">+212 6 57 87 44 90</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-ico">⊕</div>
+          <div>
+            <div class="info-lbl">Localisation</div>
+            <div class="info-val">Agadir · Aït Melloul · Agdal</div>
+            <div class="info-val2">Maroc — Sahara</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay:.2s">
+      <div class="form-wrap">
+        <div class="form-title display">Envoyez-nous un message</div>
+        <div class="form-title-ar">أرسل لنا رسالة</div>
+        <div class="form-row2">
+          <div class="field"><label>Prénom</label><input type="text" placeholder="Votre prénom"></div>
+          <div class="field"><label>Nom</label><input type="text" placeholder="Votre nom"></div>
+        </div>
+        <div class="field"><label>Email</label><input type="email" placeholder="votre@email.com"></div>
+        <div class="field"><label>Téléphone</label><input type="tel" placeholder="+212 6 XX XX XX XX"></div>
+        <div class="field">
+          <label>Type d'événement</label>
+          <select>
+            <option value="">Sélectionner...</option>
+            <option>Festival culturel</option>
+            <option>Événement corporate</option>
+            <option>Concert / Spectacle</option>
+            <option>Événement en plein air / Désert</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="field"><label>Message</label><textarea rows="4" placeholder="Décrivez votre projet..."></textarea></div>
+        <button class="btn-gold form-submit">Envoyer le message</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#hero" class="logo" style="text-decoration:none">
+    <div class="logo-diamond" style="width:26px;height:26px"><div class="logo-inner" style="width:10px;height:10px"></div></div>
+    <div class="logo-text" style="font-size:15px">Jowhara<span>tech</span></div>
+  </a>
+  <div class="footer-copy">Production & Régie Artistique · Maroc — Sahara<br>© 2025 Jowharatech. Tous droits réservés.</div>
+  <div class="footer-ar">الإنتاج والإدارة الفنية · المغرب</div>
+</footer>
+
+<script>
+// ── CURSOR ──
+const cur = document.getElementById('cur');
+const ring = document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+// ── NAVBAR SCROLL ──
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY>60);
+});
+
+// ── MOBILE MENU ──
+function toggleMenu(){ document.getElementById('mobileMenu').classList.toggle('open'); }
+function closeMenu(){ document.getElementById('mobileMenu').classList.remove('open'); }
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// ── HERO 3D CANVAS ──
+const canvas = document.getElementById('hero-canvas');
+const ctx = canvas.getContext('2d');
+function resize(){ canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight; }
+resize(); window.addEventListener('resize', resize);
+
+const GOLD='#C9A84C', GOLD_L='#E8C96A', GOLD_D='#9B7D2E';
+
+// Particles
+const pts = Array.from({length:220},()=>({
+  x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+  vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.18,
+  r:Math.random()*1.4+.3, a:Math.random()*.5+.15
+}));
+
+// Geometric shapes
+const shapes=[
+  {x:.78,y:.38,type:'diamond',s:90, spd:.004, c:GOLD, a:.65, f:0},
+  {x:.88,y:.18,type:'tri',    s:44, spd:.007, c:GOLD_L,a:.45, f:1.2},
+  {x:.68,y:.72,type:'diamond',s:55, spd:.003, c:GOLD_D,a:.38, f:.6},
+  {x:.92,y:.58,type:'ring',   s:70, spd:.002, c:GOLD,  a:.18, f:.3},
+  {x:.73,y:.12,type:'ring',   s:35, spd:.005, c:GOLD_L,a:.22, f:.9},
+  {x:.62,y:.48,type:'diamond',s:130,spd:.0015,c:GOLD,  a:.07, f:.2},
+  {x:.83,y:.82,type:'tri',    s:30, spd:.009, c:GOLD_D,a:.3,  f:1.5},
+];
+
+let t=0;
+function draw(){
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  t+=.004;
+
+  // particles
+  pts.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+    if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(201,168,76,${p.a})`;
+    ctx.fill();
+  });
+
+  // shapes
+  shapes.forEach((s,i)=>{
+    const cx=s.x*W + Math.sin(t+s.f)*10;
+    const cy=s.y*H + Math.cos(t+s.f*.7)*7;
+    const rot = t*s.spd*60;
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(rot);
+    ctx.globalAlpha=s.a;
+    ctx.strokeStyle=s.c;
+    ctx.lineWidth=1.2;
+    if(s.type==='diamond'){
+      ctx.beginPath();
+      ctx.moveTo(0,-s.s); ctx.lineTo(s.s*.58,0);
+      ctx.lineTo(0,s.s);  ctx.lineTo(-s.s*.58,0);
+      ctx.closePath(); ctx.stroke();
+      ctx.globalAlpha=s.a*.15;
+      ctx.fillStyle=s.c; ctx.fill();
+    } else if(s.type==='tri'){
+      ctx.beginPath();
+      ctx.moveTo(0,-s.s);
+      ctx.lineTo(s.s*.86,s.s*.5);
+      ctx.lineTo(-s.s*.86,s.s*.5);
+      ctx.closePath(); ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(0,0,s.s,0,Math.PI*2); ctx.stroke();
+      ctx.lineWidth=.6;
+      ctx.beginPath();
+      ctx.arc(0,0,s.s*.7,0,Math.PI*2); ctx.stroke();
+    }
+    ctx.restore();
+  });
+
+  // central glow orb
+  const ox=W*.78, oy=H*.42;
+  const g=ctx.createRadialGradient(ox,oy,0,ox,oy,140);
+  g.addColorStop(0,'rgba(201,168,76,.13)');
+  g.addColorStop(.5,'rgba(201,168,76,.05)');
+  g.addColorStop(1,'rgba(201,168,76,0)');
+  ctx.globalAlpha=1;
+  ctx.fillStyle=g;
+  ctx.beginPath(); ctx.arc(ox,oy,140,0,Math.PI*2); ctx.fill();
+
+  // rotating rings around orb
+  const pulse = .22 + Math.sin(t*1.8)*.06;
+  ctx.save();
+  ctx.translate(ox,oy); ctx.rotate(t*.5);
+  ctx.strokeStyle=`rgba(201,168,76,${pulse})`;
+  ctx.lineWidth=.9;
+  ctx.setLineDash([5,9]);
+  ctx.beginPath(); ctx.arc(0,0,95,0,Math.PI*2); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(ox,oy); ctx.rotate(-t*.3);
+  ctx.strokeStyle=`rgba(201,168,76,${pulse*.6})`;
+  ctx.lineWidth=.6;
+  ctx.beginPath(); ctx.arc(0,0,140,0,Math.PI*2); ctx.stroke();
+  ctx.restore();
+
+  // inner bright core
+  const core=ctx.createRadialGradient(ox,oy,0,ox,oy,22);
+  core.addColorStop(0,'rgba(232,201,106,.35)');
+  core.addColorStop(1,'rgba(201,168,76,0)');
+  ctx.fillStyle=core;
+  ctx.beginPath(); ctx.arc(ox,oy,22,0,Math.PI*2); ctx.fill();
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
