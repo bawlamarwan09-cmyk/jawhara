@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 const slides = [
-  { src: '/images/festival-4.jpg', alt: 'Moussem Tan Tan — Show drones, carte du Maroc dans le ciel' },
   { src: '/images/festival-1.jpg', alt: 'Festival Soussi Rabat — Pyrotechnie' },
   { src: '/images/festival-5.jpg', alt: 'Festival Semaine du Chameau — Vue aérienne scène & faisceaux' },
   { src: '/images/festival-2.jpg', alt: 'Festival Soussi Rabat — Jets CO₂' },
