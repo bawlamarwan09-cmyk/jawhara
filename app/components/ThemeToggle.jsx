@@ -5,11 +5,11 @@ import { useEffect, useState } from 'react';
 const STORAGE_KEY = 'jwt-theme';
 
 export default function ThemeToggle({ className = '' }) {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    const initial = saved === 'light' || saved === 'dark' ? saved : 'dark';
+    const initial = saved === 'light' || saved === 'dark' ? saved : 'light';
     setTheme(initial);
     document.documentElement.setAttribute('data-theme', initial);
   }, []);

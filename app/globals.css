@@ -499,6 +499,36 @@ nav.scrolled {
 .field select option { background: #222; color: white; }
 .form-submit { width: 100%; margin-top: 6px; }
 
+/* Contact info: Facebook icon link + email-like link styling */
+.social-ico { text-decoration: none; }
+.social-ico:hover { background: rgba(201,168,76,.12); }
+.info-link { color: white; text-decoration: none; transition: color .25s; }
+.info-link:hover { color: var(--gold); }
+html[data-theme="light"] .info-link { color: #1a1a1a; }
+html[data-theme="light"] .info-link:hover { color: var(--gold-dark); }
+
+/* Form submit status */
+.form-status {
+  margin-top: 14px; padding: 10px 12px; font-size: 11px;
+  letter-spacing: .05em; line-height: 1.5; border: 1px solid transparent;
+}
+.form-status-success { color: #b9e8b9; background: rgba(60,140,60,.12); border-color: rgba(60,140,60,.4); }
+.form-status-error   { color: #f5b1b1; background: rgba(180,60,60,.12); border-color: rgba(180,60,60,.4); }
+.form-status-loading { color: var(--gold); background: rgba(201,168,76,.08); border-color: rgba(201,168,76,.3); }
+.form-submit:disabled { opacity: .6; cursor: wait; }
+
+/* Footer socials */
+.footer-socials { display: flex; align-items: center; gap: 10px; }
+.social-link {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px;
+  border: 1px solid rgba(201,168,76,.25); color: var(--gold);
+  text-decoration: none; transition: all .3s;
+}
+.social-link:hover { border-color: var(--gold); background: rgba(201,168,76,.1); transform: translateY(-2px); }
+html[data-theme="light"] .social-link { border-color: rgba(155,125,46,.35); color: var(--gold-dark); }
+html[data-theme="light"] .social-link:hover { background: rgba(201,168,76,.15); border-color: var(--gold-dark); }
+
 /* ── FOOTER ── */
 footer { background: #0A0A0A; border-top: 1px solid rgba(201,168,76,.1); padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
 .footer-copy { font-size: 10px; color: rgba(255,255,255,.2); line-height: 1.6; }

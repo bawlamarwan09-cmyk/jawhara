@@ -34,12 +34,28 @@ export const viewport = {
   initialScale: 1,
 };
 
+// Runs before React hydrates, so the saved theme/lang are applied
+// instantly and there is no flash of the wrong color scheme.
+const themeBootstrap = `
+(function(){try{
+  var t = localStorage.getItem('jwt-theme');
+  document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+  var l = localStorage.getItem('jwt-lang');
+  document.documentElement.setAttribute('data-lang', l === 'ar' ? 'ar' : 'fr');
+}catch(e){}})();
+`;
+
 export default function RootLayout({ children }) {
   return (
     <html
       lang="fr"
+      data-theme="light"
+      data-lang="fr"
       className={`${cormorant.variable} ${montserrat.variable} ${notoArabic.variable}`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+      </head>
       <body>{children}</body>
     </html>
   );
