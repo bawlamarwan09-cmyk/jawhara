@@ -275,6 +275,17 @@ nav.scrolled {
   font-size: 20px; letter-spacing: .15em; text-transform: uppercase; color: white;
 }
 .logo-text span { color: var(--gold); }
+
+/* Brand logo (image) — replaces the diamond+text mark */
+.brand-logo { padding: 0; }
+.brand-logo-img {
+  display: block; height: 46px; width: auto;
+  border-radius: 8px; transition: transform .3s, height .3s;
+}
+nav.scrolled .brand-logo-img { height: 40px; }
+.brand-logo:hover .brand-logo-img { transform: scale(1.04); }
+.brand-logo-sm .brand-logo-img { height: 36px; }
+html[data-theme="light"] .brand-logo-img { box-shadow: 0 2px 10px rgba(0,30,80,.12); }
 .nav-links { display: flex; gap: 28px; list-style: none; }
 .nav-link a { display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; }
 .nav-link .fr { font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: rgba(255,255,255,.6); transition: color .3s; }
