@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import LangToggle from './LangToggle';
 import ThemeToggle from './ThemeToggle';
@@ -27,13 +28,15 @@ export default function Navbar() {
   return (
     <>
       <nav id="navbar" className={scrolled ? 'scrolled' : ''}>
-        <a href="#hero" className="logo">
-          <div className="logo-diamond">
-            <div className="logo-inner" />
-          </div>
-          <div className="logo-text">
-            Jowhara<span>tech</span>
-          </div>
+        <a href="#hero" className="logo brand-logo" aria-label="Jowharatech — Accueil">
+          <Image
+            src="WhatsApp Image 2026-05-13 at 22.15.02.jpeg"
+            alt="Jowharatech"
+            width={1024}
+            height={1024}
+            priority
+            className="brand-logo-img"
+          />
         </a>
         <ul className="nav-links">
           {links.map((l) => (
