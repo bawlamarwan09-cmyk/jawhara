@@ -1,62 +1,114 @@
-import { Cormorant_Garamond, Montserrat, Noto_Naskh_Arabic } from 'next/font/google';
+import { Manrope, Space_Grotesk } from 'next/font/google';
+import { siteConfig } from '@/content/site';
+import { getProductionOrigin } from '@/lib/seo';
+import JsonLd from './components/JsonLd';
 import './globals.css';
 
-const cormorant = Cormorant_Garamond({
+const manrope = Manrope({
   subsets: ['latin'],
-  weight: ['300', '400', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
+  variable: '--font-sans',
   display: 'swap',
 });
 
-const montserrat = Montserrat({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-montserrat',
+  variable: '--font-display',
   display: 'swap',
 });
 
-const notoArabic = Noto_Naskh_Arabic({
-  subsets: ['arabic'],
-  weight: ['400', '500'],
-  variable: '--font-noto-arabic',
-  display: 'swap',
-});
+const siteUrl = getProductionOrigin();
+const { title, description } = siteConfig.seo;
+const introBootstrap = `
+  (function () {
+    var mode = 'play';
+    try {
+      var seen = window.sessionStorage.getItem('jawhara_intro_played') === 'true';
+      var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      var constrained = Boolean(connection && (connection.saveData || /^(slow-)?2g$/.test(connection.effectiveType || '')));
+      mode = seen || reducedMotion || constrained ? 'skip' : 'play';
+    } catch (error) {
+      mode = 'skip';
+    }
+    document.documentElement.dataset.jawharaIntro = mode;
+  }());
+`;
 
 export const metadata = {
-  title: 'Jowharatech — Production & Régie Artistique',
-  description:
-    "Leader en production événementielle dans le sud du Maroc et au-delà. Festivals, scénographie, régie artistique.",
+  ...(siteUrl ? { metadataBase: new URL(siteUrl) } : {}),
+  title: {
+    default: title,
+    template: '%s | Jawhara Tech',
+  },
+  description,
+  applicationName: 'Jawhara Tech',
+  keywords: [
+    'production technique événementielle Agadir',
+    'sonorisation événement Agadir',
+    'éclairage événementiel Agadir',
+    'écrans LED événement Agadir',
+    'production technique événement Maroc',
+  ],
+  alternates: siteUrl ? { canonical: '/' } : undefined,
+  openGraph: {
+    type: 'website',
+    locale: 'fr_MA',
+    siteName: 'Jawhara Tech',
+    title,
+    description,
+    ...(siteUrl
+      ? {
+          url: '/',
+          images: [
+            {
+              url: '/og.png',
+              width: 1200,
+              height: 630,
+              alt: 'Jawhara Tech — production technique événementielle au Maroc',
+            },
+          ],
+        }
+      : {}),
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+    ...(siteUrl ? { images: ['/og.png'] } : {}),
+  },
+  icons: {
+    icon: siteConfig.logo.fallbackSrc,
+    apple: siteConfig.logo.fallbackSrc,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
 };
 
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#090909',
 };
-
-// Runs before React hydrates, so the saved theme/lang are applied
-// instantly and there is no flash of the wrong color scheme.
-const themeBootstrap = `
-(function(){try{
-  var t = localStorage.getItem('jwt-theme');
-  document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
-  var l = localStorage.getItem('jwt-lang');
-  document.documentElement.setAttribute('data-lang', l === 'ar' ? 'ar' : 'fr');
-}catch(e){}})();
-`;
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="fr"
-      data-theme="light"
-      data-lang="fr"
-      className={`${cormorant.variable} ${montserrat.variable} ${notoArabic.variable}`}
-    >
+    <html lang="fr" className={`${manrope.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+        <script dangerouslySetInnerHTML={{ __html: introBootstrap }} />
       </head>
-      <body>{children}</body>
+      <body>
+        <JsonLd />
+        {children}
+      </body>
     </html>
   );
 }

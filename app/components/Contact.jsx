@@ -1,273 +1,314 @@
 'use client';
 
 import { useState } from 'react';
+import { siteConfig } from '@/content/site';
 
 const initial = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
   type: '',
+  date: '',
+  location: '',
+  name: '',
+  phone: '',
+  email: '',
   message: '',
+  botcheck: '',
 };
 
-const FACEBOOK_URL = 'https://www.facebook.com/jowharevent.sud';
+const eventTypes = [
+  'Festivals & concerts',
+  'Événements d’entreprise',
+  'Conférences',
+  'Événements institutionnels',
+  'Mariages',
+  'Événements privés',
+];
+
+const phoneHref = siteConfig.contact.phone
+  ? 'tel:' + siteConfig.contact.phone.replace(/[^+\d]/g, '')
+  : null;
+
+const whatsappHref = siteConfig.contact.whatsapp
+  ? 'https://wa.me/' + siteConfig.contact.whatsapp.replace(/\D/g, '')
+  : null;
+
+const formspreeEndpoint = (() => {
+  const configured = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+  if (!configured) return null;
+
+  try {
+    const url = new URL(configured);
+    return url.protocol === 'https:' && url.hostname === 'formspree.io' && url.pathname.startsWith('/f/')
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
+})();
 
 export default function Contact() {
   const [form, setForm] = useState(initial);
   const [status, setStatus] = useState({ state: 'idle', message: '' });
 
-  const onChange = (e) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  const buildMailto = () => {
-    const subject = encodeURIComponent('Contact Jowharatech');
-    const body = encodeURIComponent(
-      `Prénom: ${form.firstName}\nNom: ${form.lastName}\nEmail: ${form.email}\nTéléphone: ${form.phone}\nType: ${form.type}\n\n${form.message}`,
-    );
-    return `mailto:jowharatech@gmail.com?subject=${subject}&body=${body}`;
+  const onChange = (event) => {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.firstName || !form.email || !form.message) {
+  const mailto = () => {
+    if (!siteConfig.contact.email) return null;
+
+    const subject = encodeURIComponent('Étude de projet — Jawhara Tech');
+    const body = encodeURIComponent(
+      `Type d’événement : ${form.type}\nDate : ${form.date}\nLieu : ${form.location}\nNom : ${form.name}\nTéléphone : ${form.phone}\nEmail : ${form.email || 'Non renseigné'}\n\n${form.message || 'Aucun message complémentaire.'}`,
+    );
+    return `mailto:${siteConfig.contact.email}?subject=${subject}&body=${body}`;
+  };
+
+  const useVerifiedEmailFallback = (message) => {
+    const emailFallback = mailto();
+    if (!emailFallback) {
       setStatus({
         state: 'error',
-        message: 'Merci de renseigner au moins prénom, email et message.',
+        message: 'La transmission en ligne est momentanément indisponible. Merci de réessayer dans quelques instants.',
+      });
+      return;
+    }
+
+    setStatus({ state: 'info', message });
+    window.location.href = emailFallback;
+  };
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+
+    if (form.botcheck) {
+      setForm(initial);
+      setStatus({ state: 'success', message: 'Merci. Votre demande a bien été prise en compte.' });
+      return;
+    }
+
+    if (!form.type || !form.date || !form.location || !form.name || !form.phone) {
+      setStatus({
+        state: 'error',
+        message: 'Merci de renseigner le type d’événement, la date, le lieu, votre nom et votre téléphone.',
+      });
+      return;
+    }
+
+    if (form.phone.replace(/\D/g, '').length < 8) {
+      setStatus({
+        state: 'error',
+        message: 'Merci de saisir un numéro de téléphone comportant au moins 8 chiffres.',
       });
       return;
     }
 
     const web3Key = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
-    const formspree = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+    const formspree = formspreeEndpoint;
 
-    // Web3Forms: zero-account email delivery. Get a key at https://web3forms.com
-    if (web3Key) {
-      try {
-        setStatus({ state: 'loading', message: 'Envoi en cours…' });
-        const res = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+    if (!web3Key && !formspree) {
+      useVerifiedEmailFallback('Votre messagerie va s’ouvrir pour finaliser la demande.');
+      return;
+    }
+
+    try {
+      setStatus({ state: 'loading', message: 'Transmission de votre projet…' });
+      const endpoint = web3Key ? 'https://api.web3forms.com/submit' : formspree;
+      const payload = web3Key
+        ? {
             access_key: web3Key,
-            subject: 'Nouveau message — Jowharatech',
-            from_name: `${form.firstName} ${form.lastName}`.trim(),
-            replyto: form.email,
-            firstName: form.firstName,
-            lastName: form.lastName,
-            email: form.email,
-            phone: form.phone,
-            type: form.type,
-            message: form.message,
-          }),
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          setStatus({
-            state: 'success',
-            message: 'Merci ! Votre message a bien été envoyé.',
-          });
-          setForm(initial);
-          return;
-        }
-        throw new Error(data.message || 'Request failed');
-      } catch (err) {
-        setStatus({
-          state: 'error',
-          message:
-            "Échec de l'envoi. Ouverture de votre messagerie en secours…",
-        });
-        window.location.href = buildMailto();
-        return;
-      }
-    }
+            subject: 'Étude de projet — Jawhara Tech',
+            from_name: form.name,
+            replyto: form.email || undefined,
+            ...form,
+          }
+        : { ...form, _subject: 'Étude de projet — Jawhara Tech' };
 
-    // Optional Formspree path (kept for flexibility)
-    if (formspree) {
-      try {
-        setStatus({ state: 'loading', message: 'Envoi en cours…' });
-        const res = await fetch(formspree, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ...form, _subject: 'Nouveau message — Jowharatech' }),
-        });
-        if (res.ok) {
-          setStatus({ state: 'success', message: 'Merci ! Votre message a bien été envoyé.' });
-          setForm(initial);
-          return;
-        }
-        throw new Error('Request failed');
-      } catch (err) {
-        setStatus({ state: 'error', message: "Échec de l'envoi. Ouverture de votre messagerie en secours…" });
-        window.location.href = buildMailto();
-        return;
-      }
-    }
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-    // No backend configured → fallback to user's mail client.
-    window.location.href = buildMailto();
-    setStatus({
-      state: 'success',
-      message: 'Votre messagerie va s\u2019ouvrir pour finaliser l\u2019envoi.',
-    });
+      const data = web3Key ? await response.json() : null;
+      if (!response.ok || (web3Key && !data?.success)) throw new Error('Request failed');
+
+      setForm(initial);
+      setStatus({ state: 'success', message: 'Merci. Votre projet a bien été transmis à Jawhara Tech.' });
+    } catch {
+      useVerifiedEmailFallback('L’envoi direct a échoué. Votre messagerie va s’ouvrir pour finaliser la demande.');
+    }
   };
 
+  const hasDirectContact = Boolean(
+    siteConfig.contact.phone || siteConfig.contact.whatsapp || siteConfig.contact.email,
+  );
+
   return (
-    <section id="contact">
-      <div className="contact-grid">
-        <div className="reveal">
-          <div className="section-badge">
-            <div className="divider" />
-            <span className="badge-label">Contact</span>
-            <span className="badge-ar">اتصل بنا</span>
-          </div>
-          <h2 className="contact-h2">
-            Travaillons <span className="accent">ensemble.</span>
+    <section className="lead-conversion-section" id="devis" aria-labelledby="contact-title">
+      <div className="shell lead-conversion-layout" id="contact">
+        <div className="lead-conversion-intro">
+          <p className="section-index">10 — Votre projet</p>
+          <h2 id="contact-title">
+            <span>Un projet en</span>
+            <span>préparation&nbsp;?</span>
           </h2>
-          <p className="contact-ar-sub">لنعمل معاً على تحقيق رؤيتك</p>
-          <p className="body-p" style={{ maxWidth: 360 }}>
-            Prêt à créer un événement inoubliable ? Contactez notre équipe pour
-            discuter de votre projet et bénéficier de notre expertise.
+          <p className="lead-conversion-prompt">
+            <span>Parlons de</span>
+            <span>votre événement.</span>
           </p>
-          <div className="contact-info-list">
-            <div className="info-row">
-              <div className="info-ico">✉</div>
-              <div>
-                <div className="info-lbl">Email</div>
-                <div className="info-val">jowharatech@gmail.com</div>
-              </div>
-            </div>
-            <div className="info-row">
-              <div className="info-ico">☏</div>
-              <div>
-                <div className="info-lbl">Téléphone</div>
-                <div className="info-val">+212 6 61 43 77 60</div>
-                <div className="info-val2">+212 6 57 87 44 90</div>
-              </div>
-            </div>
-            <div className="info-row">
-              <div className="info-ico">⊕</div>
-              <div>
-                <div className="info-lbl">Localisation</div>
-                <div className="info-val">Agadir · Aït Melloul · Agdal</div>
-                <div className="info-val2">Maroc — Sahara</div>
-              </div>
-            </div>
-            <div className="info-row">
-              <a
-                className="info-ico social-ico"
-                href={FACEBOOK_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Page Facebook Jowharatech"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M22 12.07C22 6.51 17.52 2 12 2S2 6.51 2 12.07c0 5.02 3.66 9.18 8.44 9.93v-7.02H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.75 8.44-4.91 8.44-9.93z"/>
-                </svg>
-              </a>
-              <div>
-                <div className="info-lbl">Facebook</div>
-                <a
-                  className="info-val info-link"
-                  href={FACEBOOK_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  jowharevent.sud
+
+          {hasDirectContact && (
+            <address className="direct-contact-options" aria-label="Contacts directs vérifiés">
+              {siteConfig.contact.phone && (
+                <a href={phoneHref}>
+                  <span>Appeler</span>
+                  <strong>{siteConfig.contact.phone}</strong>
                 </a>
-                <div className="info-val2">Suivez nos événements</div>
-              </div>
-            </div>
-          </div>
+              )}
+              {siteConfig.contact.whatsapp && (
+                <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                  <span>WhatsApp</span>
+                  <strong>{siteConfig.contact.whatsapp}</strong>
+                </a>
+              )}
+              {siteConfig.contact.email && (
+                <a href={'mailto:' + siteConfig.contact.email}>
+                  <span>Email</span>
+                  <strong>{siteConfig.contact.email}</strong>
+                </a>
+              )}
+            </address>
+          )}
         </div>
 
-        <div className="reveal" style={{ transitionDelay: '.2s' }}>
-          <form className="form-wrap" onSubmit={onSubmit}>
-            <div className="form-title display">Envoyez-nous un message</div>
-            <div className="form-title-ar">أرسل لنا رسالة</div>
-            <div className="form-row2">
-              <div className="field">
-                <label>Prénom</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={onChange}
-                  placeholder="Votre prénom"
-                />
+        <form className="lead-qualification-form" onSubmit={onSubmit}>
+          <div className="honeypot-field" aria-hidden="true" hidden>
+            <label htmlFor="botcheck">Ne pas remplir ce champ</label>
+            <input
+              id="botcheck"
+              name="botcheck"
+              value={form.botcheck}
+              onChange={onChange}
+              tabIndex="-1"
+              autoComplete="off"
+            />
+          </div>
+
+          <div className="field field-wide field-step">
+            <span aria-hidden="true">01</span>
+            <div>
+              <label htmlFor="type">Type d’événement *</label>
+              <select id="type" name="type" value={form.type} onChange={onChange} required>
+                <option value="">Sélectionner un format</option>
+                {eventTypes.map((type) => <option key={type}>{type}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="field field-step">
+              <span aria-hidden="true">02</span>
+              <div>
+                <label htmlFor="date">Date *</label>
+                <input id="date" type="date" name="date" value={form.date} onChange={onChange} required />
               </div>
-              <div className="field">
-                <label>Nom</label>
+            </div>
+            <div className="field field-step">
+              <span aria-hidden="true">03</span>
+              <div>
+                <label htmlFor="location">Lieu *</label>
                 <input
-                  type="text"
-                  name="lastName"
-                  value={form.lastName}
+                  id="location"
+                  name="location"
+                  value={form.location}
                   onChange={onChange}
-                  placeholder="Votre nom"
+                  autoComplete="address-level2"
+                  placeholder="Ville ou lieu"
+                  required
                 />
               </div>
             </div>
-            <div className="field">
-              <label>Email</label>
+          </div>
+
+          <div className="form-row">
+            <div className="field field-step">
+              <span aria-hidden="true">04</span>
+              <div>
+                <label htmlFor="name">Nom *</label>
+                <input id="name" name="name" value={form.name} onChange={onChange} autoComplete="name" required />
+              </div>
+            </div>
+            <div className="field field-step">
+              <span aria-hidden="true">05</span>
+              <div>
+                <label htmlFor="phone">Téléphone *</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  name="phone"
+                  value={form.phone}
+                  onChange={onChange}
+                  autoComplete="tel"
+                  inputMode="tel"
+                  minLength={8}
+                  maxLength={20}
+                  pattern="[+0-9 ]{8,20}"
+                  title="Utilisez des chiffres, des espaces et, si nécessaire, le signe +."
+                  aria-describedby="form-requirements"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="field field-wide field-step field-optional">
+            <span aria-hidden="true">06</span>
+            <div>
+              <label htmlFor="email">Email <small>Optionnel</small></label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={onChange}
-                placeholder="votre@email.com"
+                autoComplete="email"
               />
             </div>
-            <div className="field">
-              <label>Téléphone</label>
-              <input
-                type="tel"
-                name="phone"
-                value={form.phone}
-                onChange={onChange}
-                placeholder="+212 6 XX XX XX XX"
-              />
-            </div>
-            <div className="field">
-              <label>Type d&apos;événement</label>
-              <select name="type" value={form.type} onChange={onChange}>
-                <option value="">Sélectionner...</option>
-                <option>Festival culturel</option>
-                <option>Événement corporate</option>
-                <option>Concert / Spectacle</option>
-                <option>Événement en plein air / Désert</option>
-                <option>Autre</option>
-              </select>
-            </div>
-            <div className="field">
-              <label>Message</label>
+          </div>
+
+          <div className="field field-wide field-step field-optional">
+            <span aria-hidden="true">07</span>
+            <div>
+              <label htmlFor="message">Message <small>Optionnel</small></label>
               <textarea
+                id="message"
                 name="message"
-                rows={4}
+                rows="5"
                 value={form.message}
                 onChange={onChange}
-                placeholder="Décrivez votre projet..."
+                placeholder="Contexte, contraintes ou besoins déjà identifiés…"
               />
             </div>
-            <button
-              type="submit"
-              className="btn-gold form-submit"
-              disabled={status.state === 'loading'}
-            >
-              {status.state === 'loading' ? 'Envoi…' : 'Envoyer le message'}
+          </div>
+
+          <div className="lead-form-footer">
+            <button className="button button-primary" type="submit" disabled={status.state === 'loading'}>
+              {status.state === 'loading' ? 'Transmission…' : 'Étudier mon projet'}
             </button>
-            {status.message && (
-              <div className={`form-status form-status-${status.state}`} role="status">
-                {status.message}
-              </div>
-            )}
-          </form>
-        </div>
+            <small id="form-requirements">Les cinq premiers champs permettent de qualifier votre demande.</small>
+          </div>
+
+          {status.message && (
+            <p
+              className={'form-status form-status-' + status.state}
+              role={status.state === 'error' ? 'alert' : 'status'}
+              aria-live={status.state === 'error' ? 'assertive' : 'polite'}
+            >
+              {status.message}
+            </p>
+          )}
+        </form>
       </div>
     </section>
   );

@@ -1,27 +1,31 @@
-import Cursor from './components/Cursor';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import About from './components/About';
-import Expertises from './components/Expertises';
-import Gallery from './components/Gallery';
-import References from './components/References';
+import HomeProofAndPaths from './components/HomeProofAndPaths';
+import HomeCapabilities from './components/HomeCapabilities';
+import FeaturedProjects from './components/FeaturedProjects';
+import HomeEquipment from './components/HomeEquipment';
+import HomeTeamStory from './components/HomeTeamStory';
+import HomeProcess from './components/HomeProcess';
+import HomeEventTypes from './components/HomeEventTypes';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import RevealObserver from './components/RevealObserver';
 
 export default function Home() {
   return (
     <>
-      <Cursor />
       <Navbar />
-      <Hero />
-      <About />
-      <Expertises />
-      <Gallery />
-      <References />
-      <Contact />
+      <main>
+        <Hero />
+        <HomeProofAndPaths />
+        <HomeCapabilities />
+        <FeaturedProjects />
+        <HomeEquipment />
+        <HomeTeamStory />
+        <HomeProcess />
+        <HomeEventTypes />
+        <Contact />
+      </main>
       <Footer />
-      <RevealObserver />
     </>
   );
 }

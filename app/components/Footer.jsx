@@ -1,40 +1,78 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import { siteConfig } from '@/content/site';
+
+const services = [
+  ['Production technique complète', '/production-technique-evenementielle-agadir'],
+  ['Location de matériel', '/location-materiel-evenementiel-agadir'],
+  ['Sonorisation professionnelle', '/sonorisation-evenement-agadir'],
+  ['Éclairage événementiel', '/eclairage-evenementiel-agadir'],
+  ['Écrans LED & vidéo', '/location-ecran-led-agadir'],
+  ['Régie & conduite technique', '/production-technique-evenementielle-agadir'],
+];
+
+const navigation = [
+  ['Réalisations', '/realisations'],
+  ['À propos', '/a-propos'],
+  ['Devis', '/devis'],
+  ['Contact', '/contact'],
+];
+
+const footerPhoneHref = siteConfig.contact.phone
+  ? 'tel:' + siteConfig.contact.phone.replace(/[^+\d]/g, '')
+  : null;
 
 export default function Footer() {
   return (
-    <footer>
-      <a
-        href="#hero"
-        className="logo brand-logo brand-logo-sm"
-        style={{ textDecoration: 'none' }}
-        aria-label="Jowharatech — Haut de page"
-      >
-        <Image
-          src="/images/jowharatech-logo.jpg"
-          alt="Jowharatech"
-          width={1024}
-          height={1024}
-          className="brand-logo-img"
-        />
-      </a>
-      <div className="footer-copy">
-        Production &amp; Régie Artistique · Maroc — Sahara
-        <br />© 2025 Jowharatech. Tous droits réservés.
+    <footer className="site-footer">
+      <div className="shell footer-grid">
+        <div className="footer-brand">
+          <Link className="brand-link" href="/" aria-label="Jawhara Tech — Accueil">
+            <Image
+              className="brand-logo footer-logo"
+              src={siteConfig.logo.fallbackSrc}
+              alt={siteConfig.logo.alt}
+              width={siteConfig.logo.width}
+              height={siteConfig.logo.height}
+            />
+          </Link>
+          <p>Production technique, sonorisation, éclairage, écrans LED et régie événementielle au Maroc.</p>
+          {siteConfig.socials.facebook && (
+            <a className="footer-social" href={siteConfig.socials.facebook} target="_blank" rel="noopener noreferrer">
+              Facebook
+            </a>
+          )}
+        </div>
+        <div>
+          <h2>Services</h2>
+          <ul>
+            {services.map(([label, href]) => <li key={label}><Link href={href}>{label}</Link></li>)}
+          </ul>
+        </div>
+        <div>
+          <h2>Navigation</h2>
+          <ul>
+            {navigation.map(([label, href]) => <li key={label}><Link href={href}>{label}</Link></li>)}
+          </ul>
+        </div>
+        <div>
+          <h2>Contact</h2>
+          <address>
+            {siteConfig.contact.phone && <a href={footerPhoneHref}>{siteConfig.contact.phone}</a>}
+            {siteConfig.contact.email && (
+              <a href={'mailto:' + siteConfig.contact.email}>{siteConfig.contact.email}</a>
+            )}
+            {siteConfig.contact.address && <span>{siteConfig.contact.address}</span>}
+            {!siteConfig.contact.phone && !siteConfig.contact.email && !siteConfig.contact.address && (
+              <Link href="/devis">Utiliser le formulaire de projet</Link>
+            )}
+          </address>
+        </div>
       </div>
-      <div className="footer-socials">
-        <a
-          href="https://www.facebook.com/jowharevent.sud"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Facebook Jowharatech"
-          className="social-link"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M22 12.07C22 6.51 17.52 2 12 2S2 6.51 2 12.07c0 5.02 3.66 9.18 8.44 9.93v-7.02H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.75 8.44-4.91 8.44-9.93z" />
-          </svg>
-        </a>
+      <div className="shell footer-bottom">
+        <p>© {new Date().getFullYear()} Jawhara Tech. Tous droits réservés.</p>
+        <a href="#top">Retour en haut</a>
       </div>
-      <div className="footer-ar">الإنتاج والإدارة الفنية · المغرب</div>
     </footer>
   );
 }
